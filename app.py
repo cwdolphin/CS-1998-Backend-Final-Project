@@ -96,11 +96,14 @@ def create_author():
 @app.route("/api/book/<int:id>/review/", methods = ['POST'])
 def create_review():
     body = json.loads(request.data)
-    review = body.get("review","")
-    book_id = body.get("id","")
-    if review == "" or book_id == "":
-        return failure_response("Please provide a review and a book id")
-    return success_response(dao.create_review(review, book_id))
+    content = body.get("content","")
+    book_id = body.get("book_id","")
+    if content == None or book_id == None:
+        return failure_response("Please provide a review and a book id!")
+    new_review = dao.create_review(content, book_id)
+    if new_review is None:
+        return failure_response("Either book id or content is invalid")
+    return success_response(new_review)
 
 @app.route("/api/genre/", methods = ['POST'])
 def create_genre():
