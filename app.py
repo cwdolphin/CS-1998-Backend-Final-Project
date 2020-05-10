@@ -4,7 +4,7 @@ from db import db
 import dao
 
 app = Flask(__name__)
-db_filename = "cms.db"
+db_filename = "library.db"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///%s" % db_filename
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -76,14 +76,14 @@ def get_all_genre():
         return failure_response("There are no genres.")
     return success_response(a)
 
-@app.route("/api/book/", methods = ['POST'])
-def create_book():
-    body = json.loads(request.data)
-    title = body.get("title","")
-    published_year = body.get("year", -1)
-    if title == "" or published_year == -1:
-        return failure_response("Please provide a title and a published year")
-    return success_response(dao.add_book(title, published_year))
+# @app.route("/api/book/", methods = ['POST'])
+# def create_book():
+#     body = json.loads(request.data)
+#     title = body.get("title","")
+#     published_year = body.get("published_year", -1)
+#     if title == "" or published_year == -1:
+#         return failure_response("Please provide a title and a published year")
+#     return success_response(dao.add_book(title, published_year))
 
 @app.route("/api/author/", methods = ['POST'])
 def create_author():
@@ -121,16 +121,14 @@ def update_book_author(id):
         return failure_response("Either book id or author id is invalid")
     return success_response(update)
 
-@app.route("/api/book/<int:id>/genre/", methods = ['POST'])
-def update_book_genre(id):
+@app.route("/api/genre/<int:id>/book/", methods = ['POST'])
+def create_book_with_genre(id):
     body = json.loads(request.data)
-    genre_id = body.get("genre_id", "")
-    if genre_id == "":
+    new_book = dao.add_book(body.get("title"), body.get("published_year"), id)
+    # genre_id = body.get("genre_id", "")
+    if new_book == None:
         return failure_response("Please provide a valid genre id")
-    update = dao.update_book_with_genre(genre_id, id)
-    if update is None:
-        return failure_response("Either book id or genre id is invalid")
-    return success_response(update)
+    return success_response(new_book)
     
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
