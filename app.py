@@ -20,9 +20,6 @@ def success_response(data, code=200):
 def failure_response(message, code=404):
     return json.dumps({"success": False, "error": message}), code
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
-
 @app.route("/api/book/<int:id>/", methods = ['GET'])
 def get_book(id):
     book = dao.get_book(int(id))
@@ -134,3 +131,6 @@ def update_book_genre(id):
     if update is None:
         return failure_response("Either book id or genre id is invalid")
     return success_response(update)
+    
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
