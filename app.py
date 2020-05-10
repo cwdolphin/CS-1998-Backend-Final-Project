@@ -76,15 +76,6 @@ def get_all_genre():
         return failure_response("There are no genres.")
     return success_response(a)
 
-# @app.route("/api/book/", methods = ['POST'])
-# def create_book():
-#     body = json.loads(request.data)
-#     title = body.get("title","")
-#     published_year = body.get("published_year", -1)
-#     if title == "" or published_year == -1:
-#         return failure_response("Please provide a title and a published year")
-#     return success_response(dao.add_book(title, published_year))
-
 @app.route("/api/author/", methods = ['POST'])
 def create_author():
     body = json.loads(request.data)
@@ -94,13 +85,12 @@ def create_author():
     return success_response(dao.create_author(name))
 
 @app.route("/api/book/<int:id>/review/", methods = ['POST'])
-def create_review():
+def create_review(id):
     body = json.loads(request.data)
     content = body.get("content","")
-    book_id = body.get("book_id","")
-    if content == None or book_id == None:
-        return failure_response("Please provide a review and a book id!")
-    new_review = dao.create_review(content, book_id)
+    if content == None:
+        return failure_response("Please provide a review!")
+    new_review = dao.create_review(content, id)
     if new_review is None:
         return failure_response("Either book id or content is invalid")
     return success_response(new_review)
