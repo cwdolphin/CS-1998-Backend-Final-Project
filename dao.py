@@ -1,4 +1,4 @@
-from db import db, Book, Author, Review, association_table, Genre
+from db import db, Book, Author, Review, association_table, Genre, User
 
 def get_book(book_id):
   book = Book.query.filter_by(id=book_id).first()
@@ -21,7 +21,7 @@ def delete_book(book_id):
       return None
   db.session.delete(delete_book)
   db.session.commit()
-  return delete_book.serialize_book()
+  return delete_book.serialize_book_short()
 
 def get_all_books():
   return [b.serialize_book() for b in Book.query.all()]
@@ -50,14 +50,32 @@ def update_book_with_new_author(author_id, book_id):
 def get_all_authors():
   return [a.serialize_author() for a in Author.query.all()]
 
-def create_review(review_text, review_book_id):
+def create_review(review_text, review_book_id, username, password):
   book = Book.query.filter_by(id=review_book_id).first()
-  if book is None:
+  if book is None or is_invalid_user(username, password):
     return None
   new_review = Review(content = review_text, book_id = review_book_id)
   db.session.add(new_review)
   db.session.commit()
   return new_review.serialize_review()
+
+def create_user(username, password):
+  user = User.query.filter_by(username=username).first()
+  if user is None:
+    new_user = User(username = username, password = password)
+    db.session.add(new_user)
+    db.session.commit()
+    return new_user.serialize_user()
+  return None
+
+def is_invalid_user(username, password):
+  user = User.query.filter_by(username=username, password = password).first()
+  if user is None:
+    return True
+  return False
+
+def get_all_user():
+  return [a.serialize_user() for a in User.query.all()]
 
 def get_all_reviews():
   return [a.serialize_review() for a in Review.query.all()]

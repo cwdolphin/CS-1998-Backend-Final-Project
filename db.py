@@ -26,7 +26,7 @@ class Book(db.Model):
       "title": self.title,
       "published_year": self.published_year,
       "genre": {"id": genre.id, "name": genre.name},
-      "authors": [x.serialize_author() for x in self.authors],
+      "authors": [x.serialize_author_short() for x in self.authors],
       "reviews": [y.serialize_review() for y in self.reviews]
     }
 
@@ -57,12 +57,22 @@ class Review(db.Model):
   id = db.Column(db.Integer, primary_key=True, autoincrement=True)
   content = db.Column(db.String, nullable=False)
   book_id = db.Column(db.Integer, db.ForeignKey("book.id"), nullable=False)
+  user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
   def serialize_review(self):
     book = Book.query.filter_by(id=self.id).first()
     return {            
       "id": self.id,
       "content": self.content,
       "book": {"id": book.id, "title": book.title, "published_year": book.published_year}
+    }
+  def serialize_review_user(self):
+    book = Book.query.filter_by(id=self.id).first()
+    user = User.query.filter_by(id=self.id).first()
+    return {            
+      "id": self.id,
+      "content": self.content,
+      "book": {"id": book.id, "title": book.title, "published_year": book.published_year},
+      "user": {"user id":user.id, "username":user.name}
     }
 
 class Author(db.Model):    
@@ -75,4 +85,21 @@ class Author(db.Model):
       "id": self.id,
       "name": self.name,
       "books": [x.serialize_book_short() for x in self.books]
+    }
+  def serialize_author_short(self):
+    return {
+      "id": self.id,
+      "name": self.name
+    }
+
+class User(db.Model):
+  __tablename__ = "user"   
+  id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+  username = db.Column(db.String, nullable=False)
+  password = db.Column(db.String, nullable=False)
+  reviews = db.relationship("Review", cascade="delete")
+  def serialize_user(self):
+    return {
+      "username": self.username
+      #"reviews": [r.serialize_review() for r in self.reviews]
     }

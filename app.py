@@ -76,14 +76,24 @@ def get_all_genre():
         return failure_response("There are no genres.")
     return success_response(a)
 
-# @app.route("/api/book/", methods = ['POST'])
-# def create_book():
-#     body = json.loads(request.data)
-#     title = body.get("title","")
-#     published_year = body.get("published_year", -1)
-#     if title == "" or published_year == -1:
-#         return failure_response("Please provide a title and a published year")
-#     return success_response(dao.add_book(title, published_year))
+@app.route("/api/user/", methods = ['GET'])
+def get_all_user():
+    a = dao.get_all_user()
+    if a is None:
+        return failure_response("There are no users.")
+    return success_response(a)
+
+@app.route("/api/register/", methods = ['POST'])
+def create_user():
+    body = json.loads(request.data)
+    username = body.get("username","")
+    password = body.get("password","")
+    if username == "" or password == "":
+        return failure_response("Please provide a username and a password")
+    u = dao.create_user(username, password)
+    if u is None:
+        return failure_response("Username already exists")
+    return success_response(u)
 
 @app.route("/api/author/", methods = ['POST'])
 def create_author():
@@ -98,9 +108,13 @@ def create_review():
     body = json.loads(request.data)
     content = body.get("content","")
     book_id = body.get("book_id","")
+    username = body.get("username","")
+    password = body.get("password","")
     if content == None or book_id == None:
         return failure_response("Please provide a review and a book id!")
-    new_review = dao.create_review(content, book_id)
+    if dao.is_invalid_user(username, password):
+        return failure_response("Please provide a valid login")
+    new_review = dao.create_review(content, book_id, username, password)
     if new_review is None:
         return failure_response("Either book id or content is invalid")
     return success_response(new_review)
