@@ -109,6 +109,28 @@ def create_review():
 def create_genre():
     body = json.loads(request.data)
     name = body.get("name","")
-    if name = ""
+    if name == ""
         return failure_response("Please provide a name for the genre")
     return success_response(dao.create_genre(name))
+
+@app.route("/api/book/<int:id>/author", methods = ['POST'])
+def update_book_author(id):
+    body = json.loads(request.data)
+    author_id = body.get("author_id", "")
+    if author_id == ""
+        return failure_response("Please provide a valid author id")
+    update = dao.update_book_with_new_author(author_id, id)
+    if update is None
+        return failure_response("Either book id or author id is invalid")
+    return success_response(update)
+
+@app.route("/api/book/<int:id>/genre", methods = ['POST'])
+def update_book_genre(id):
+    body = json.loads(request.data)
+    genre_id = body.get("genre_id", "")
+    if genre_id == ""
+        return failure_response("Please provide a valid genre id")
+    update = dao.update_book_with_genre(genre_id, id)
+    if update is None
+        return failure_response("Either book id or genre id is invalid")
+    return success_response(update)
