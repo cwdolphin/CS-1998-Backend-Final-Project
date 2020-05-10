@@ -83,8 +83,8 @@ def get_all_genre():
 def create_book():
     body = json.loads(request.data)
     title = body.get("title","")
-    published_year = body.get("year","")
-    if (title == "") or (published_year == ""):
+    published_year = body.get("year", -1)
+    if title == "" or published_year == -1:
         return failure_response("Please provide a title and a published year")
     return success_response(dao.add_book(title, published_year))
 
@@ -113,7 +113,7 @@ def create_genre():
         return failure_response("Please provide a name for the genre")
     return success_response(dao.create_genre(name))
 
-@app.route("/api/book/<int:id>/author", methods = ['POST'])
+@app.route("/api/book/<int:id>/author/", methods = ['POST'])
 def update_book_author(id):
     body = json.loads(request.data)
     author_id = body.get("author_id", "")
@@ -124,7 +124,7 @@ def update_book_author(id):
         return failure_response("Either book id or author id is invalid")
     return success_response(update)
 
-@app.route("/api/book/<int:id>/genre", methods = ['POST'])
+@app.route("/api/book/<int:id>/genre/", methods = ['POST'])
 def update_book_genre(id):
     body = json.loads(request.data)
     genre_id = body.get("genre_id", "")
