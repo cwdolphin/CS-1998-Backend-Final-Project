@@ -104,7 +104,7 @@ def create_author():
     return success_response(dao.create_author(name))
 
 @app.route("/api/book/<int:id>/review/", methods = ['POST'])
-def create_review():
+def create_review(id):
     body = json.loads(request.data)
     content = body.get("content","")
     book_id = body.get("book_id","")
