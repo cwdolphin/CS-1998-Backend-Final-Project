@@ -93,7 +93,7 @@ def create_author():
         return failure_response("Please provide a name")
     return success_response(dao.create_author(name))
 
-@app.route("/api/review/", methods = ['POST'])
+@app.route("/api/book/<int:id>/review/", methods = ['POST'])
 def create_review():
     body = json.loads(request.data)
     review = body.get("review","")
@@ -125,7 +125,6 @@ def update_book_author(id):
 def create_book_with_genre(id):
     body = json.loads(request.data)
     new_book = dao.add_book(body.get("title"), body.get("published_year"), id)
-    # genre_id = body.get("genre_id", "")
     if new_book == None:
         return failure_response("Please provide a valid genre id")
     return success_response(new_book)

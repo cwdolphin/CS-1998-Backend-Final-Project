@@ -6,11 +6,11 @@ def get_book(book_id):
     return None
   return book.serialize_book()
 
-def add_book(book_title, book_published_year, genre_id):
-  genre = Genre.query.filter_by(id=genre_id).first()
+def add_book(book_title, book_published_year, book_genre_id):
+  genre = Genre.query.filter_by(id=book_genre_id).first()
   if genre is None:
     return None
-  new_book = Book(title = book_title, published_year = book_published_year, genre_id = id)
+  new_book = Book(title = book_title, published_year = book_published_year, genre_id = book_genre_id)
   db.session.add(new_book)
   db.session.commit()
   return new_book.serialize_book_short()

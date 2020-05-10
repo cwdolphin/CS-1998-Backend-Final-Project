@@ -16,7 +16,7 @@ class Book(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   title = db.Column(db.String, nullable=False)
   published_year = db.Column(db.Integer, nullable=False)
-  genre_id = db.Column(db.Integer, db.ForeignKey("genre.id"), nullable=True)
+  genre_id = db.Column(db.Integer, db.ForeignKey("genre.id"), nullable=False)
   authors = db.relationship("Author", secondary=association_table, back_populates="books")
   reviews = db.relationship("Review", cascade="delete")
   def serialize_book(self):
@@ -31,6 +31,7 @@ class Book(db.Model):
     }
 
   def serialize_book_short(self):
+    genre = Genre.query.filter_by(id=self.id).first()
     return {            
       "id": self.id,
       "title": self.title,
@@ -41,8 +42,8 @@ class Book(db.Model):
 
 class Genre(db.Model):
   __tablename__ = "genre" 
-  id = db.Column(db.Integer, primary_key=True, nullable=True)
-  name = db.Column(db.String, nullable=True)
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String, nullable=False)
   books = db.relationship("Book")
   def serialize_genre(self):
     return {            
@@ -55,7 +56,7 @@ class Review(db.Model):
   __tablename__ = "review"    
   id = db.Column(db.Integer, primary_key=True)
   content = db.Column(db.String, nullable=False)
-  book_id = db.Column(db.Integer, db.ForeignKey("book.id"), nullable=True)
+  book_id = db.Column(db.Integer, db.ForeignKey("book.id"), nullable=False)
   def serialize_review(self):
     book = Book.query.filter_by(id=self.id).first()
     return {            
