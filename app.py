@@ -83,8 +83,8 @@ def get_all_genre():
 def create_book():
     body = json.loads(request.data)
     title = body.get("title","")
-    published_year = body.get("year","")
-    if title == "" or published_year == ""
+    published_year = body.get("year", -1)
+    if title == "" or published_year == -1:
         return failure_response("Please provide a title and a published year")
     return success_response(dao.add_book(title, published_year))
 
@@ -92,7 +92,7 @@ def create_book():
 def create_author():
     body = json.loads(request.data)
     name = body.get("name","")
-    if name = ""
+    if name == "":
         return failure_response("Please provide a name")
     return success_response(dao.create_author(name))
 
@@ -101,7 +101,7 @@ def create_review():
     body = json.loads(request.data)
     review = body.get("review","")
     book_id = body.get("id","")
-    if review == "" or book_id == ""
+    if review == "" or book_id == "":
         return failure_response("Please provide a review and a book id")
     return success_response(dao.create_review(review, book_id))
 
@@ -109,28 +109,28 @@ def create_review():
 def create_genre():
     body = json.loads(request.data)
     name = body.get("name","")
-    if name == ""
+    if name == "":
         return failure_response("Please provide a name for the genre")
     return success_response(dao.create_genre(name))
 
-@app.route("/api/book/<int:id>/author", methods = ['POST'])
+@app.route("/api/book/<int:id>/author/", methods = ['POST'])
 def update_book_author(id):
     body = json.loads(request.data)
     author_id = body.get("author_id", "")
-    if author_id == ""
+    if author_id == "":
         return failure_response("Please provide a valid author id")
     update = dao.update_book_with_new_author(author_id, id)
-    if update is None
+    if update is None:
         return failure_response("Either book id or author id is invalid")
     return success_response(update)
 
-@app.route("/api/book/<int:id>/genre", methods = ['POST'])
+@app.route("/api/book/<int:id>/genre/", methods = ['POST'])
 def update_book_genre(id):
     body = json.loads(request.data)
     genre_id = body.get("genre_id", "")
-    if genre_id == ""
+    if genre_id == "":
         return failure_response("Please provide a valid genre id")
     update = dao.update_book_with_genre(genre_id, id)
-    if update is None
+    if update is None:
         return failure_response("Either book id or genre id is invalid")
     return success_response(update)
