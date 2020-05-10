@@ -13,7 +13,7 @@ association_table = db.Table("association", db.Model.metadata,
 
 class Book(db.Model):    
   __tablename__ = "book"    
-  id = db.Column(db.Integer, primary_key=True)
+  id = db.Column(db.Integer, primary_key=True, autoincrement=True)
   title = db.Column(db.String, nullable=False)
   published_year = db.Column(db.Integer, nullable=False)
   genre_id = db.Column(db.Integer, db.ForeignKey("genre.id"), nullable=False)
@@ -54,7 +54,7 @@ class Genre(db.Model):
 
 class Review(db.Model):    
   __tablename__ = "review"    
-  id = db.Column(db.Integer, primary_key=True)
+  id = db.Column(db.Integer, primary_key=True, autoincrement=True)
   content = db.Column(db.String, nullable=False)
   book_id = db.Column(db.Integer, db.ForeignKey("book.id"), nullable=False)
   def serialize_review(self):
@@ -67,7 +67,7 @@ class Review(db.Model):
 
 class Author(db.Model):    
   __tablename__ = "author"    
-  id = db.Column(db.Integer, primary_key=True)
+  id = db.Column(db.Integer, primary_key=True, autoincrement=True)
   name = db.Column(db.String, nullable=False)
   books = db.relationship("Book", secondary=association_table, back_populates='authors')
   def serialize_author(self):
