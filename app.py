@@ -28,9 +28,9 @@ def get_book(id):
     return success_response(book)
 
 @app.route("/api/book/<int:id>/", methods = ['DELETE'])
-def del_course(id):
+def del_book(id):
     book = dao.delete_book(id)
-    if course is None:
+    if book is None:
         return failure_response("There is no book with this id")
     return success_response(book)
 
