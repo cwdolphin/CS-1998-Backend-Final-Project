@@ -45,6 +45,7 @@ class Genre(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String, nullable=False)
   books = db.relationship("Book")
+  #reviews = db.relationship("Review", cascade="delete")
   def serialize_genre(self):
     return {            
       "id": self.id,
@@ -52,28 +53,19 @@ class Genre(db.Model):
       "books": [x.serialize_book_short() for x in self.books]
     }
 
-class Review(db.Model):    
-  __tablename__ = "review"    
-  id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-  content = db.Column(db.String, nullable=False)
-  book_id = db.Column(db.Integer, db.ForeignKey("book.id"), nullable=False)
-  user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-  def serialize_review(self):
-    book = Book.query.filter_by(id=self.id).first()
-    return {            
-      "id": self.id,
-      "content": self.content,
-      "book": {"id": book.id, "title": book.title, "published_year": book.published_year}
+class User(db.Model):
+  __tablename__ = "user"   
+  id = db.Column(db.Integer, primary_key=True)
+  username = db.Column(db.String, nullable=False)
+  password = db.Column(db.String, nullable=False)
+  reviews = db.relationship("Review", cascade="delete")
+  def serialize_user(self):
+    return {
+      "username": self.username,
+      "reviews": [r.serialize_review_user() for r in self.reviews]
     }
-  def serialize_review_user(self):
-    book = Book.query.filter_by(id=self.id).first()
-    user = User.query.filter_by(id=self.id).first()
-    return {            
-      "id": self.id,
-      "content": self.content,
-      "book": {"id": book.id, "title": book.title, "published_year": book.published_year},
-      "user": {"user id":user.id, "username":user.name}
-    }
+  def get_id(self):
+    return self.id
 
 class Author(db.Model):    
   __tablename__ = "author"    
@@ -92,14 +84,33 @@ class Author(db.Model):
       "name": self.name
     }
 
-class User(db.Model):
-  __tablename__ = "user"   
-  id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-  username = db.Column(db.String, nullable=False)
-  password = db.Column(db.String, nullable=False)
-  reviews = db.relationship("Review", cascade="delete")
+class Review(db.Model):    
+  __tablename__ = "review"    
+  id = db.Column(db.Integer, primary_key=True)
+  content = db.Column(db.String, nullable=False)
+  user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+  book_id = db.Column(db.Integer, db.ForeignKey("book.id"), nullable=False)
+
+  def serialize_review(self):
+    user = User.query.filter_by(id=self.id).first()
+    return {            
+      "id": self.id,
+      "content": self.content,
+      "user": {"user id":user.id, "username":user.username}
+    }
   def serialize_user(self):
-    return {
-      "username": self.username
-      #"reviews": [r.serialize_review() for r in self.reviews]
+    book = Book.query.filter_by(id=self.id).first()
+    return {            
+      "id": self.id,
+      "content": self.content,
+      "book": {"id": book.id, "title": book.title, "published_year": book.published_year}
+    }
+  def serialize_review_all(self):
+    book = Book.query.filter_by(id=self.id).first()
+    user = User.query.filter_by(id=self.id).first()
+    return {            
+      "id": self.id,
+      "content": self.content,
+      "book": {"id": book.id, "title": book.title, "published_year": book.published_year},
+      "user": {"user id":user.id, "username":user.username}
     }

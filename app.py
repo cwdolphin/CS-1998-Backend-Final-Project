@@ -107,14 +107,13 @@ def create_author():
 def create_review(id):
     body = json.loads(request.data)
     content = body.get("content","")
-    book_id = body.get("book_id","")
     username = body.get("username","")
     password = body.get("password","")
-    if content == None or book_id == None:
+    if content == None:
         return failure_response("Please provide a review and a book id!")
-    if dao.is_invalid_user(username, password):
+    if dao.get_user(username, password) is None:
         return failure_response("Please provide a valid login")
-    new_review = dao.create_review(content, book_id, username, password)
+    new_review = dao.create_review(content, id, username, password)
     if new_review is None:
         return failure_response("Either book id or content is invalid")
     return success_response(new_review)

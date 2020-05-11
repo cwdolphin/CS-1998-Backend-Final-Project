@@ -52,9 +52,10 @@ def get_all_authors():
 
 def create_review(review_text, review_book_id, username, password):
   book = Book.query.filter_by(id=review_book_id).first()
-  if book is None or is_invalid_user(username, password):
+  u = get_user(username, password)
+  if book is None or u is None:
     return None
-  new_review = Review(content = review_text, book_id = review_book_id)
+  new_review = Review(content = review_text, book_id = review_book_id, user_id = u.get_id())
   db.session.add(new_review)
   db.session.commit()
   return new_review.serialize_review()
@@ -68,17 +69,15 @@ def create_user(username, password):
     return new_user.serialize_user()
   return None
 
-def is_invalid_user(username, password):
+def get_user(username, password):
   user = User.query.filter_by(username=username, password = password).first()
-  if user is None:
-    return True
-  return False
+  return user
 
 def get_all_user():
   return [a.serialize_user() for a in User.query.all()]
 
 def get_all_reviews():
-  return [a.serialize_review() for a in Review.query.all()]
+  return [a.serialize_review_all() for a in Review.query.all()]
 
 def create_genre(g_name):
   new_genre = Genre(name=g_name)
