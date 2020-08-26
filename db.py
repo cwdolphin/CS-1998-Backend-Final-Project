@@ -62,7 +62,7 @@ class User(db.Model):
   def serialize_user(self):
     return {
       "username": self.username,
-      "reviews": [r.serialize_review_user() for r in self.reviews]
+      "reviews": [r.serialize_review_all() for r in self.reviews]
     }
   def get_id(self):
     return self.id
